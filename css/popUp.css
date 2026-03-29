@@ -168,6 +168,16 @@
     font-weight: 500;
 }
 
+.pop_up_container.dragover {
+    background: rgba(181, 215, 247, 0.06);
+    border-color: rgba(181, 215, 247, 0.45);
+    transform: scale(1.01);
+}
+
+.pop_up_container {
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
 /* tablet */
 @media (max-width: 768px) {
     .pop_up {
