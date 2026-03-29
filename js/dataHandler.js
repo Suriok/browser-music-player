@@ -2,6 +2,7 @@
 const browseButton = document.querySelector(".browse_button")
 const audioFileInput = document.getElementById("audioFileInput")
 const dropZone = document.getElementById("drop_zone")
+const selectedFiles = document.getElementById("selectedFileText")
 
 // BROWSE FILES
 browseButton.addEventListener("click", () => {
@@ -35,7 +36,7 @@ dropZone.addEventListener("drop", (event) => {
 function handleFiles(files) {
     const maxSize = 50 * 1024 * 1024;
     const allowedTypes = ["audio/mpeg", "audio/wav", "audio/x-wav"];
-
+    const validatedFiles = [];
     files.forEach((file) => {
         if (!allowedTypes.includes(file.type)) {
             alert(`File "${file.name}" is not MP3 or WAV.`);
@@ -47,6 +48,8 @@ function handleFiles(files) {
             return;
         }
 
+        validatedFiles.push(file);
+
         console.log("Valid file:", file.name);
         console.log("Type:", file.type);
         console.log("Size:", file.size);
@@ -54,4 +57,12 @@ function handleFiles(files) {
         const fileURL = URL.createObjectURL(file);
         console.log("Temporary URL:", fileURL);
     });
+
+    if(validatedFiles.length === 1){
+        selectedFiles.textContent = validatedFiles[0].name;
+        selectedFiles.classList.add("has_files");
+    }else if(validatedFiles.length > 1){
+        selectedFiles.textContent = `${validatedFiles.length} files selected`;
+        selectedFiles.classList.add("has_files");
+    }
 }

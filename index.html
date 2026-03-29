@@ -104,6 +104,7 @@
 
             <h3 class="drop_title">Drag and drop your files here</h3>
             <p class="format_text">Supported formats: MP3, WAV</p>
+            <p class="selected_file" id="selectedFileText">No file selected</p>
 
             <div class="divider">
                 <span>OR</span>
@@ -112,6 +113,7 @@
             <input type="file"
                    id="audioFileInput"
                    accept=".mp3,.wav,audio/mpeg,audio/wav"
+                   multiple
                    hidden
             >
 
@@ -122,6 +124,8 @@
         </div>
 
         <p class="file_limit_text">Maximum file size: 50MB per track</p>
+
+
     </section>
 </div>
 <script type="module" src="js/popup.js"></script>
