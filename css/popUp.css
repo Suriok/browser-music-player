@@ -1,0 +1,225 @@
+.popup_overlay {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: rgba(7, 10, 33, 0.45);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    padding: 16px;
+}
+
+.pop_up {
+    position: relative;
+    width: min(100%, 540px);
+    background: #1c1d4d;
+    border: 1px solid rgba(138, 184, 232, 0.18);
+    border-radius: 18px;
+    padding: 22px 22px 20px;
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.25);
+}
+
+.pop_up_header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 13px;
+    margin-bottom: 18px;
+}
+
+.pop_up_title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    color: #e9f6fc;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.pop_up_title img {
+    width: 20px;
+    height: 20px;
+    display: block;
+}
+
+.close_button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    opacity: 0.8;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.close_button:hover,
+.close_button:focus-visible {
+    opacity: 1;
+    transform: scale(1.08);
+}
+
+.close_button img {
+    width: 25px;
+    height: 25px;
+    display: block;
+}
+
+.pop_up_container {
+    border: 2px dashed rgba(138, 184, 232, 0.3);
+    border-radius: 20px;
+    padding: 32px 24px 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.upload_icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: rgba(138, 184, 232, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 18px;
+}
+
+.upload_icon img {
+    width: 28px;
+    height: 28px;
+    display: block;
+}
+
+.drop_title {
+    margin: 0 0 8px;
+    color: #e9f6fc;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.format_text {
+    margin: 0 0 20px;
+    color: #8ab8e8;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    width: 100%;
+    margin: 0 0 20px;
+    color: #8ab8e8;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.divider::before,
+.divider::after {
+    content: "";
+    flex: 1;
+    max-width: 145px;
+    height: 1px;
+    background: rgba(138, 184, 232, 0.22);
+}
+
+.browse_button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 18px;
+    border-radius: 12px;
+    background: rgba(138, 184, 232, 0.12);
+    border: 1px solid rgba(138, 184, 232, 0.2);
+    color: #e9f6fc;
+    font-size: 14px;
+    font-weight: 700;
+    transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.browse_button:hover,
+.browse_button:focus-visible {
+    transform: translateY(-1px);
+    background: rgba(138, 184, 232, 0.16);
+    box-shadow: 0 0 18px rgba(138, 184, 232, 0.12);
+}
+
+.browse_button img {
+    width: 18px;
+    height: 18px;
+    display: block;
+}
+
+.file_limit_text {
+    margin: 16px 0 0;
+    text-align: center;
+    color: #6f8fcf;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+/* tablet */
+@media (max-width: 768px) {
+    .pop_up {
+        width: min(100%, 500px);
+    }
+
+    .pop_up_container {
+        padding: 28px 18px 24px;
+    }
+
+    .divider::before,
+    .divider::after {
+        max-width: 120px;
+    }
+}
+
+/* mobile */
+@media (max-width: 480px) {
+    .popup_overlay {
+        padding: 10px;
+    }
+
+    .pop_up {
+        padding: 18px 16px 16px;
+        border-radius: 16px;
+    }
+
+    .pop_up_title {
+        font-size: 16px;
+    }
+
+    .upload_icon {
+        width: 56px;
+        height: 56px;
+        margin-bottom: 16px;
+    }
+
+    .upload_icon img {
+        width: 24px;
+        height: 24px;
+    }
+
+    .drop_title {
+        font-size: 16px;
+    }
+
+    .format_text {
+        font-size: 13px;
+    }
+
+    .browse_button {
+        width: 100%;
+    }
+
+    .divider::before,
+    .divider::after {
+        max-width: none;
+    }
+}
