@@ -9,6 +9,10 @@
     padding: 16px;
 }
 
+.hidden {
+    display: none;
+}
+
 .pop_up {
     position: relative;
     width: min(100%, 540px);

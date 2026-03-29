@@ -48,7 +48,7 @@
     <aside class="container_player" aria-label="Playlist">
         <div class="upper_line">
             <h2 class="song_artist">UP NEXT</h2>
-            <button class="image_button" type="button" aria-label="Add track">
+            <button class="image_button" type="button" id ="open" aria-label="Add track">
                 <img src="photo/add_button.svg" alt="">
             </button>
         </div>
@@ -84,7 +84,7 @@
     </aside>
 </main>
 
-<div class="popup_overlay">
+<div class="popup_overlay hidden" id="popUp">
     <section class="pop_up" role="dialog" aria-modal="true" aria-labelledby="popup_title">
         <div class="pop_up_header">
             <h2 id="popup_title" class="pop_up_title">
@@ -92,7 +92,7 @@
                 Add Music
             </h2>
 
-            <button class="close_button" type="button" aria-label="Close popup">
+            <button class="close_button" type="button" id="close" aria-label="Close popup">
                 <img src="photo/cross.svg" alt="">
             </button>
         </div>
@@ -109,6 +109,12 @@
                 <span>OR</span>
             </div>
 
+            <input type="file"
+                   id="audioFileInput"
+                   accept=".mp3,.wav,audio/mpeg,audio/wav"
+                   hidden
+            >
+
             <button class="browse_button" type="button">
                 <img src="photo/folder.svg" alt="" aria-hidden="true">
                 <span>Browse Files</span>
@@ -118,5 +124,6 @@
         <p class="file_limit_text">Maximum file size: 50MB per track</p>
     </section>
 </div>
+<script type="module" src="js/popup.js"></script>
 </body>
 </html>
