@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VibeMusic</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+    <section class="container_player" aria-label="Now playing">
+        <figure class="song_photo">
+            <img src="photo/album.jpg" alt="Album cover for Midnight Glow">
+        </figure>
+        <h2 class="song_name">Midnight Glow</h2>
+        <p class="song_artist">Neon Waves</p>
+
+
+        <label for="progress" class="visually_hidden">Track progress</label>
+        <input
+                id="progress"
+                class="progress_bar"
+                type="range"
+                min="0"
+                max="100"
+                value="38"
+                aria-label="Track progress"
+        >
+
+        <time class="song_time" datetime="PT3M42S">3:42</time>
+
+        <footer class="controlers" aria-label="Audio controls">
+            <button class="prev_button" type="button" aria-label="Previous track">
+                <img src="photo/control_button_prev.svg" alt="">
+            </button>
+
+            <button class="play_button" type="button" aria-label="Play or pause">
+                <img src="photo/play.svg" alt="">
+            </button>
+
+            <button class="next_button" type="button" aria-label="Next track">
+                <img src="photo/control_button_next.svg" alt="">
+            </button>
+        </footer>
+    </section>
+
+    <aside class="container_player" aria-label="Playlist">
+        <div class="upper_line">
+            <h2 class="song_artist">UP NEXT</h2>
+            <button class="image_button" type="button" aria-label="Add track">
+                <img src="photo/add_button.svg" alt="">
+            </button>
+        </div>
+
+        <section aria-label="Upcoming songs">
+            <article class="song_num active_track">
+                <h3 class="number_song">01</h3>
+                <span class="text_container">
+                    <span class="song_name">Midnight Glow</span>
+                    <span class="song_artist">Neon Waves</span>
+                </span>
+                <time class="song_time" datetime="PT3M42S">3:42</time>
+            </article>
+
+            <article class="song_num">
+                <h3 class="number_song">02</h3>
+                <span class="text_container">
+                    <span class="song_name">Echoes of Light</span>
+                    <span class="song_artist">Silent Current</span>
+                </span>
+                <time class="song_time" datetime="PT4M15S">4:15</time>
+            </article>
+
+            <article class="song_num">
+                <h3 class="number_song">03</h3>
+                <span class="text_container">
+                    <span class="song_name">Drifting Away</span>
+                    <span class="song_artist">Velvet Horizon</span>
+                </span>
+                <time class="song_time" datetime="PT3M58S">3:58</time>
+            </article>
+        </section>
+    </aside>
+</main>
+</body>
+</html>
