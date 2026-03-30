@@ -8,6 +8,7 @@ class Player{
         this.songName = document.getElementById("currentSongName");
         this.songArtist = document.getElementById("currentSongArtist");
         this.songTime = document.getElementById("currentSongTime");
+        this.songCover = document.getElementById("currentSongCover");
 
         this.audio = new Audio(); // Media Api
 
@@ -110,6 +111,7 @@ class Player{
         const titleName = track.querySelector(".song_name");
         const artistName = track.querySelector(".song_artist");
         const time = track.querySelector(".song_time");
+        const cover = track.dataset.cover;
 
         this.audio.src = src;
         this.currentTrackIndex = index;
@@ -126,6 +128,15 @@ class Player{
             this.songTime.textContent = time.textContent;
         }
 
+        if (this.songCover){
+            this.songCover.src = cover || "photo/cover.jpg";
+
+            if (titleName) {
+                this.songCover.alt = `Album cover for ${titleName.textContent}`;
+            } else {
+                this.songCover.alt = "Album cover";
+            }
+        }
         this.updateActiveTrack();
     }
 

@@ -89,11 +89,11 @@ class DataHandler {
             const trackNumber = this.playList.querySelectorAll(".song_num").length;
             const formattedNumber = String(trackNumber).padStart(2, "0");
 
-            const fileName = this.formatFileName(file.name);
             const fileURL = URL.createObjectURL(file);
 
             const duration = await this.getAudioDuration(fileURL);
             const formattedDuration = this.formatTime(duration);
+            const metadata = await this.readAudioMetadata(file);
 
             const article = document.createElement("article");
             article.className = "song_num";
@@ -101,13 +101,18 @@ class DataHandler {
             article.innerHTML = `
                 <h3 class="number_song">${formattedNumber}</h3>
                 <span class="text_container">
-                    <span class="song_name">${fileName}</span>
-                    <span class="song_artist">Unknown artist</span>
+                    <span class="song_name">${metadata.title}</span>
+                    <span class="song_artist">${metadata.artist}</span>
                 </span>
                 <time class="song_time">${formattedDuration}</time>
             `;
 
             article.dataset.src = fileURL;
+
+            if (metadata.coverUrl) {
+                article.dataset.cover = metadata.coverUrl;
+            }
+
             this.playList.appendChild(article);
         }
 
@@ -135,6 +140,48 @@ class DataHandler {
 
             audio.addEventListener("error", () => {
                 resolve(0);
+            });
+        });
+    }
+
+    readAudioMetadata(file) {
+        return new Promise((resolve) => {
+            const mediaTags = window["jsmediatags"];
+
+            if (!mediaTags) {
+                resolve({
+                    title: this.formatFileName(file.name),
+                    artist: "Unknown artist",
+                    coverUrl: null
+                });
+                return;
+            }
+
+            mediaTags.read(file, {
+                onSuccess: (result) => {
+                    const tagMap = result && result.tags ? result.tags : {};
+                    const pictureTag = tagMap.picture;
+                    let coverUrl = null;
+
+                    if (pictureTag) {
+                        const byteArray = new Uint8Array(pictureTag.data);
+                        const blob = new Blob([byteArray], { type: pictureTag.format });
+                        coverUrl = URL.createObjectURL(blob);
+                    }
+
+                    resolve({
+                        title: tagMap.title || this.formatFileName(file.name),
+                        artist: tagMap.artist || (tagMap["TCOM"] && tagMap["TCOM"].data) || "Unknown artist",
+                        coverUrl: coverUrl
+                    });
+                },
+                onError: () => {
+                    resolve({
+                        title: this.formatFileName(file.name),
+                        artist: "Unknown artist",
+                        coverUrl: null
+                    });
+                }
             });
         });
     }
