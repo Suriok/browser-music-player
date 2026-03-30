@@ -198,6 +198,32 @@
     word-break: break-word;
 }
 
+.confirm_button {
+    margin-top: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 12px 18px;
+    border-radius: 12px;
+    background: rgba(181, 215, 247, 0.16);
+    border: 1px solid rgba(181, 215, 247, 0.22);
+    color: #e9f6fc;
+    font-size: 14px;
+    font-weight: 700;
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.confirm_button:hover,
+.confirm_button:focus-visible {
+    transform: translateY(-1px);
+    background: rgba(181, 215, 247, 0.22);
+}
+
+.song_num:empty {
+    display: none;
+}
+
 /* tablet */
 @media (max-width: 768px) {
     .pop_up {

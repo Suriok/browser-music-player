@@ -53,33 +53,8 @@
             </button>
         </div>
 
-        <section aria-label="Upcoming songs">
-            <article class="song_num active_track">
-                <h3 class="number_song">01</h3>
-                <span class="text_container">
-                    <span class="song_name">Midnight Glow</span>
-                    <span class="song_artist">Neon Waves</span>
-                </span>
-                <time class="song_time" datetime="PT3M42S">3:42</time>
-            </article>
-
-            <article class="song_num">
-                <h3 class="number_song">02</h3>
-                <span class="text_container">
-                    <span class="song_name">Echoes of Light</span>
-                    <span class="song_artist">Silent Current</span>
-                </span>
-                <time class="song_time" datetime="PT4M15S">4:15</time>
-            </article>
-
-            <article class="song_num">
-                <h3 class="number_song">03</h3>
-                <span class="text_container">
-                    <span class="song_name">Drifting Away</span>
-                    <span class="song_artist">Velvet Horizon</span>
-                </span>
-                <time class="song_time" datetime="PT3M58S">3:58</time>
-            </article>
+        <section aria-label="Upcoming songs" id="playlistContainer">
+            <article class="song_num active_track"></article>
         </section>
     </aside>
 </main>
@@ -121,6 +96,10 @@
                 <img src="photo/folder.svg" alt="" aria-hidden="true">
                 <span>Browse Files</span>
             </button>
+
+            <button class="confirm_button" id="confirmUploadButton" type="button">
+                Add tracks
+            </button>
         </div>
 
         <p class="file_limit_text">Maximum file size: 50MB per track</p>
@@ -128,7 +107,6 @@
 
     </section>
 </div>
-<script type="module" src="js/popup.js"></script>
-<script type="module" src="js/dataHandler.js"></script>
+<script type="module" src="js/main.js"></script>
 </body>
 </html>
