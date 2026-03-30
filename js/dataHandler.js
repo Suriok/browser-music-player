@@ -86,7 +86,7 @@ class DataHandler {
         if (!this.playList || this.uploadedFiles.length === 0) return;
 
         for (const file of this.uploadedFiles) {
-            const trackNumber = this.playList.querySelectorAll(".song_num").length;
+            const trackNumber = this.playList.querySelectorAll(".song_num").length + 1;
             const formattedNumber = String(trackNumber).padStart(2, "0");
 
             const fileURL = URL.createObjectURL(file);
