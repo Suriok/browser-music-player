@@ -46,7 +46,6 @@ main {
     align-items: center;
     justify-content: center;
     border-radius: 24px;
-    margin-bottom: 0;
     transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
@@ -146,6 +145,12 @@ main {
     border: none;
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.play_button img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
 }
 
 .play_button:hover,
