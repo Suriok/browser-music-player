@@ -59,6 +59,8 @@
                 class="playlist_search"
                 placeholder="Search songs or artists"
                 autofocus
+                minlength="1"
+                maxlength="80"
                 aria-label="Search songs or artists"
         >
 
@@ -79,13 +81,13 @@
             </button>
         </div>
 
-        <div class="pop_up_container" id="drop_zone">
+        <form class="pop_up_container" id="drop_zone">
             <div class="upload_icon">
                 <img src="photo/upload.svg" alt="" aria-hidden="true">
             </div>
 
             <h3 class="drop_title">Drag and drop your files here</h3>
-            <p class="format_text">Supported formats: MP3, WAV</p>
+            <p class="format_text" id="fileRules">Supported formats: MP3, WAV</p>
             <p class="selected_file" id="selectedFileText">No file selected</p>
 
             <div class="divider">
@@ -96,6 +98,8 @@
                    id="audioFileInput"
                    accept=".mp3,.wav,audio/mpeg,audio/wav"
                    multiple
+                   required
+                   aria-describedby="fileRules"
                    hidden
             >
 
@@ -104,10 +108,10 @@
                 <span>Browse Files</span>
             </button>
 
-            <button class="confirm_button" id="confirmUploadButton" type="button">
+            <button class="confirm_button" id="confirmUploadButton" type="submit">
                 Add tracks
             </button>
-        </div>
+        </form>
 
         <p class="file_limit_text">Maximum file size: 50MB per track</p>
 
