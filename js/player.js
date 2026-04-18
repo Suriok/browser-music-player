@@ -20,6 +20,7 @@ class Player{
         this.bindControls(); // buttons
         this.bindAudioEvents(); // events
         this.bindPlaylistEvents(); // Click on songs, playlist
+        this.restoreLastTrack();
     }
 
 
@@ -138,6 +139,16 @@ class Player{
             }
         }
         this.updateActiveTrack();
+    }
+
+    restoreLastTrack() {
+        const savedIndex = Number(localStorage.getItem("currentTrackIndex"));
+        const tracks = this.getTracks();
+
+        if (!Number.isInteger(savedIndex)) return;
+        if (savedIndex < 0 || savedIndex >= tracks.length) return;
+
+        this.loadTrack(savedIndex);
     }
 
     async play() {

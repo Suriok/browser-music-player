@@ -1,4 +1,6 @@
 import { popup } from "./popup.js";
+import { trackStorage } from "./storage.js";
+import { createTrackElement } from "./playlistRenderer.js";
 
 class DataHandler {
     constructor() {
@@ -12,42 +14,53 @@ class DataHandler {
         this.uploadedFiles = [];
     }
 
-    setup() {
-        if (this.browseButton && this.audioFileInput) {
-            this.browseButton.addEventListener("click", () => {
-                this.audioFileInput.click();
-            });
+    async setup() {
+        this.bindBrowseInput();
+        this.bindDropZone();
+        this.bindAddSongButton();
+        await this.restoreTracksFromStorage();
+    }
 
-            this.audioFileInput.addEventListener("change", (event) => {
-                const files = Array.from(event.target.files);
-                this.handleFiles(files);
-            });
-        }
+    bindBrowseInput() {
+        if (!this.browseButton || !this.audioFileInput) return;
 
-        if (this.dropZone) {
-            this.dropZone.addEventListener("dragover", (event) => {
-                event.preventDefault();
-                this.dropZone.classList.add("dragover");
-            });
+        this.browseButton.addEventListener("click", () => {
+            this.audioFileInput.click();
+        });
 
-            this.dropZone.addEventListener("dragleave", () => {
-                this.dropZone.classList.remove("dragover");
-            });
+        this.audioFileInput.addEventListener("change", (event) => {
+            const files = Array.from(event.target.files);
+            this.handleFiles(files);
+        });
+    }
 
-            this.dropZone.addEventListener("drop", (event) => {
-                event.preventDefault();
-                this.dropZone.classList.remove("dragover");
+    bindDropZone() {
+        if (!this.dropZone) return;
 
-                const files = Array.from(event.dataTransfer.files);
-                this.handleFiles(files);
-            });
-        }
+        this.dropZone.addEventListener("dragover", (event) => {
+            event.preventDefault();
+            this.dropZone.classList.add("dragover");
+        });
 
-        if (this.addSongButton) {
-            this.addSongButton.addEventListener("click", async () => {
-                await this.addUploadedSongsToPlaylist();
-            });
-        }
+        this.dropZone.addEventListener("dragleave", () => {
+            this.dropZone.classList.remove("dragover");
+        });
+
+        this.dropZone.addEventListener("drop", (event) => {
+            event.preventDefault();
+            this.dropZone.classList.remove("dragover");
+
+            const files = Array.from(event.dataTransfer.files);
+            this.handleFiles(files);
+        });
+    }
+
+    bindAddSongButton() {
+        if (!this.addSongButton) return;
+
+        this.addSongButton.addEventListener("click", async () => {
+            await this.addUploadedSongsToPlaylist();
+        });
     }
 
     handleFiles(files) {
@@ -74,11 +87,10 @@ class DataHandler {
         this.uploadedFiles = [...this.uploadedFiles, ...validatedFiles];
 
         if (this.selectedFiles) {
-            if (this.uploadedFiles.length === 1) {
-                this.selectedFiles.textContent = this.formatFileName(this.uploadedFiles[0].name);
-            } else {
-                this.selectedFiles.textContent = `${this.uploadedFiles.length} files selected`;
-            }
+            this.selectedFiles.textContent =
+                this.uploadedFiles.length === 1
+                    ? this.formatFileName(this.uploadedFiles[0].name)
+                    : `${this.uploadedFiles.length} files selected`;
         }
     }
 
@@ -86,34 +98,20 @@ class DataHandler {
         if (!this.playList || this.uploadedFiles.length === 0) return;
 
         for (const file of this.uploadedFiles) {
-            const trackNumber = this.playList.querySelectorAll(".song_num").length + 1;
-            const formattedNumber = String(trackNumber).padStart(2, "0");
-
+            const metadata = await this.readAudioMetadata(file);
             const fileURL = URL.createObjectURL(file);
-
             const duration = await this.getAudioDuration(fileURL);
             const formattedDuration = this.formatTime(duration);
-            const metadata = await this.readAudioMetadata(file);
 
-            const article = document.createElement("article");
-            article.className = "song_num";
+            const trackData = {
+                file,
+                title: metadata.title,
+                artist: metadata.artist,
+                duration: formattedDuration,
+            };
 
-            article.innerHTML = `
-                <h3 class="number_song">${formattedNumber}</h3>
-                <span class="text_container">
-                    <span class="song_name">${metadata.title}</span>
-                    <span class="song_artist">${metadata.artist}</span>
-                </span>
-                <time class="song_time">${formattedDuration}</time>
-            `;
-
-            article.dataset.src = fileURL;
-
-            if (metadata.coverUrl) {
-                article.dataset.cover = metadata.coverUrl;
-            }
-
-            this.playList.appendChild(article);
+            await trackStorage.saveTrack(trackData);
+            this.appendTrackToPlaylist(trackData);
         }
 
         this.uploadedFiles = [];
@@ -127,6 +125,38 @@ class DataHandler {
         }
 
         popup.close();
+    }
+
+    async restoreTracksFromStorage() {
+        if (!this.playList) return;
+
+        const storedTracks = await trackStorage.getAllTracks();
+
+        for (const track of storedTracks) {
+            const metadata = await this.readAudioMetadata(track.file);
+
+            this.appendTrackToPlaylist({
+                ...track,
+                coverUrl: metadata.coverUrl
+            });
+        }
+    }
+
+    appendTrackToPlaylist(track) {
+        if (!this.playList) return;
+
+        const index = this.playList.querySelectorAll(".song_num").length + 1;
+
+        const trackElement = createTrackElement({
+            index,
+            title: track.title,
+            artist: track.artist,
+            duration: track.duration,
+            file: track.file,
+            coverUrl: track.coverUrl
+        });
+
+        this.playList.appendChild(trackElement);
     }
 
     getAudioDuration(fileURL) {
@@ -146,7 +176,7 @@ class DataHandler {
 
     readAudioMetadata(file) {
         return new Promise((resolve) => {
-            const mediaTags = window["jsmediatags"];
+            const mediaTags = window.jsmediatags;
 
             if (!mediaTags) {
                 resolve({
@@ -159,7 +189,7 @@ class DataHandler {
 
             mediaTags.read(file, {
                 onSuccess: (result) => {
-                    const tagMap = result && result.tags ? result.tags : {};
+                    const tagMap = result?.tags || {};
                     const pictureTag = tagMap.picture;
                     let coverUrl = null;
 
@@ -171,8 +201,8 @@ class DataHandler {
 
                     resolve({
                         title: tagMap.title || this.formatFileName(file.name),
-                        artist: tagMap.artist || (tagMap["TCOM"] && tagMap["TCOM"].data) || "Unknown artist",
-                        coverUrl: coverUrl
+                        artist: tagMap.artist || "Unknown artist",
+                        coverUrl
                     });
                 },
                 onError: () => {

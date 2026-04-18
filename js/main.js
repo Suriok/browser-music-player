@@ -1,9 +1,13 @@
-import {popup} from "./popup.js";
-import {dataHandler} from "./dataHandler.js";
-import {player} from "./player.js";
+import { popup } from "./popup.js";
+import { dataHandler } from "./dataHandler.js";
+import { player } from "./player.js";
 import { playlistSearch } from "./search.js";
 
-popup.setup();
-dataHandler.setup();
-player.setup();
-playlistSearch.setup();
+async function initApp() {
+    popup.setup();
+    await dataHandler.setup();
+    player.setup();
+    playlistSearch.setup();
+}
+
+initApp();
