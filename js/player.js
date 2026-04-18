@@ -20,6 +20,7 @@ class Player{
         this.bindControls(); // buttons
         this.bindAudioEvents(); // events
         this.bindPlaylistEvents(); // Click on songs, playlist
+        this.bindHistoryEvents();
         this.restoreLastTrack();
     }
 
@@ -79,6 +80,10 @@ class Player{
         if (!this.playListContainer) return;
 
         this.playListContainer.addEventListener("click", (event) => {
+            if (event.target.closest(".delete_track_button")) {
+                return;
+            }
+
             const track = event.target.closest(".song_num");
 
             if (!track) return;
@@ -89,8 +94,14 @@ class Player{
 
             if (clickedTrackIndex === -1) return;
 
-            this.loadTrack(clickedTrackIndex);
+            this.loadTrack(clickedTrackIndex, { historyMode: "push" });
             void this.play();
+        });
+    }
+
+    bindHistoryEvents() {
+        window.addEventListener("popstate", (event) => {
+            this.handlePopState(event);
         });
     }
 
@@ -102,7 +113,8 @@ class Player{
             .filter(track => track.dataset.src);
     }
 
-    loadTrack(index) {
+    loadTrack(index, options = {}) {
+        const { historyMode = "none" } = options;
         const tracks = this.getTracks();
         const track = tracks[index];
 
@@ -116,6 +128,7 @@ class Player{
 
         this.audio.src = src;
         this.currentTrackIndex = index;
+        localStorage.setItem("currentTrackIndex", String(index));
 
         if (this.songName && titleName) {
             this.songName.textContent = titleName.textContent;
@@ -138,24 +151,33 @@ class Player{
                 this.songCover.alt = "Album cover";
             }
         }
+
+        this.updateHistoryForTrack(historyMode);
         this.updateActiveTrack();
     }
 
     restoreLastTrack() {
-        const savedIndex = Number(localStorage.getItem("currentTrackIndex"));
         const tracks = this.getTracks();
+        const trackFromUrl = this.getTrackIndexFromUrl();
+
+        if (Number.isInteger(trackFromUrl) && trackFromUrl >= 0 && trackFromUrl < tracks.length) {
+            this.loadTrack(trackFromUrl, { historyMode: "replace" });
+            return;
+        }
+
+        const savedIndex = Number(localStorage.getItem("currentTrackIndex"));
 
         if (!Number.isInteger(savedIndex)) return;
         if (savedIndex < 0 || savedIndex >= tracks.length) return;
 
-        this.loadTrack(savedIndex);
+        this.loadTrack(savedIndex, { historyMode: "replace" });
     }
 
     async play() {
         if (!this.audio.src) {
             const tracks = this.getTracks();
             if (tracks.length === 0) return;
-            this.loadTrack(0);
+            this.loadTrack(0, { historyMode: "replace" });
         }
 
         try {
@@ -196,7 +218,7 @@ class Player{
             nextIndex = 0;
         }
 
-        this.loadTrack(nextIndex);
+        this.loadTrack(nextIndex, { historyMode: "push" });
         void this.play();
     }
 
@@ -210,8 +232,71 @@ class Player{
             previousIndex = tracks.length - 1;
         }
 
-        this.loadTrack(previousIndex);
+        this.loadTrack(previousIndex, { historyMode: "push" });
         void this.play();
+    }
+
+    getTrackIndexFromUrl() {
+        const url = new URL(window.location.href);
+        const trackParam = url.searchParams.get("track");
+
+        if (!trackParam) return null;
+
+        const parsed = Number(trackParam);
+        if (!Number.isInteger(parsed)) return null;
+
+        return parsed - 1;
+    }
+
+    handlePopState(event) {
+        const tracks = this.getTracks();
+        if (tracks.length === 0) {
+            this.resetPlayer();
+            return;
+        }
+
+        const stateIndex = event.state?.trackIndex;
+        const parsedStateIndex = Number(stateIndex);
+
+        if (Number.isInteger(parsedStateIndex) && parsedStateIndex >= 0 && parsedStateIndex < tracks.length) {
+            this.loadTrack(parsedStateIndex);
+            void this.play();
+            return;
+        }
+
+        const trackFromUrl = this.getTrackIndexFromUrl();
+        if (!Number.isInteger(trackFromUrl)) {
+            this.resetPlayer();
+            return;
+        }
+        if (trackFromUrl < 0 || trackFromUrl >= tracks.length) {
+            this.resetPlayer();
+            return;
+        }
+
+        this.loadTrack(trackFromUrl);
+        void this.play();
+    }
+
+    updateHistoryForTrack(mode) {
+        if (!["push", "replace"].includes(mode)) return;
+        if (this.currentTrackIndex < 0) return;
+
+        const url = new URL(window.location.href);
+        url.searchParams.set("track", String(this.currentTrackIndex + 1));
+
+        const state = { trackIndex: this.currentTrackIndex };
+
+        if (mode === "push") {
+            history.pushState(state, "", url);
+            return;
+        }
+
+        history.replaceState(state, "", url);
+    }
+
+    syncHistoryWithCurrentTrack(mode = "replace") {
+        this.updateHistoryForTrack(mode);
     }
 
     updateProgress() {
@@ -258,6 +343,46 @@ class Player{
         const remainingSeconds = Math.floor(seconds % 60);
 
         return `${minutes}:${String(remainingSeconds).padStart(2, "0")}`;
+    }
+
+    resetPlayer() {
+        this.audio.pause();
+        this.audio.src = "";
+
+        this.currentTrackIndex = -1;
+        this.isPlaying = false;
+
+        localStorage.removeItem("currentTrackIndex");
+        this.clearTrackFromUrl();
+
+        if (this.songName) {
+            this.songName.textContent = "Midnight Glow";
+        }
+
+        if (this.songArtist) {
+            this.songArtist.textContent = "Neon Waves";
+        }
+
+        if (this.songTime) {
+            this.songTime.textContent = "3:42";
+        }
+
+        if (this.songCover) {
+            this.songCover.src = "photo/album.jpg";
+            this.songCover.alt = "Album cover";
+        }
+
+        if (this.progressBar) {
+            this.progressBar.value = 0;
+        }
+
+        this.updatePlayButtonIcon();
+    }
+
+    clearTrackFromUrl() {
+        const url = new URL(window.location.href);
+        url.searchParams.delete("track");
+        history.replaceState({}, "", url);
     }
 }
 

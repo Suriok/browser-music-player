@@ -49,13 +49,13 @@ class TrackStorage {
         });
     }
 
-    async clearTracks() {
+    async deleteTrack(trackId) {
         const db = await this.openDB();
 
         return new Promise((resolve, reject) => {
             const transaction = db.transaction(STORE_NAME, "readwrite");
             const store = transaction.objectStore(STORE_NAME);
-            const request = store.clear();
+            const request = store.delete(trackId);
 
             request.onsuccess = () => resolve();
             request.onerror = () => reject(request.error);

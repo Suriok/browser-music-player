@@ -1,12 +1,14 @@
 import { popup } from "./popup.js";
 import { trackStorage } from "./storage.js";
 import { createTrackElement } from "./playlistRenderer.js";
+import { player } from "./player.js";
 
 class DataHandler {
     constructor() {
         this.browseButton = document.querySelector(".browse_button");
         this.audioFileInput = document.getElementById("audioFileInput");
         this.dropZone = document.getElementById("drop_zone");
+        this.uploadForm = document.getElementById("drop_zone");
         this.selectedFiles = document.getElementById("selectedFileText");
         this.addSongButton = document.getElementById("confirmUploadButton");
         this.playList = document.getElementById("playlistContainer");
@@ -19,6 +21,7 @@ class DataHandler {
         this.bindDropZone();
         this.bindAddSongButton();
         await this.restoreTracksFromStorage();
+        this.bindDeleteTrack();
     }
 
     bindBrowseInput() {
@@ -56,9 +59,20 @@ class DataHandler {
     }
 
     bindAddSongButton() {
-        if (!this.addSongButton) return;
+        if (!this.uploadForm) return;
 
-        this.addSongButton.addEventListener("click", async () => {
+        this.uploadForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            if (!this.audioFileInput) return;
+
+            if (this.uploadedFiles.length === 0) {
+                this.audioFileInput.setCustomValidity("Please select at least one audio file.");
+                this.audioFileInput.reportValidity();
+                return;
+            }
+
+            this.audioFileInput.setCustomValidity("");
             await this.addUploadedSongsToPlaylist();
         });
     }
@@ -67,22 +81,39 @@ class DataHandler {
         const maxSize = 50 * 1024 * 1024;
         const allowedTypes = ["audio/mpeg", "audio/wav", "audio/x-wav"];
         const validatedFiles = [];
+        let validationError = "";
 
         files.forEach((file) => {
             if (!allowedTypes.includes(file.type)) {
-                alert(`File "${file.name}" is not MP3 or WAV.`);
+                if (!validationError) {
+                    validationError = `File "${file.name}" is not MP3 or WAV.`;
+                }
                 return;
             }
 
             if (file.size > maxSize) {
-                alert(`File "${file.name}" is larger than 50MB.`);
+                if (!validationError) {
+                    validationError = `File "${file.name}" is larger than 50MB.`;
+                }
                 return;
             }
 
             validatedFiles.push(file);
         });
 
-        if (validatedFiles.length === 0) return;
+        if (validatedFiles.length === 0) {
+            if (this.audioFileInput) {
+                this.audioFileInput.setCustomValidity(
+                    validationError || "Please select a valid MP3 or WAV file."
+                );
+                this.audioFileInput.reportValidity();
+            }
+            return;
+        }
+
+        if (this.audioFileInput) {
+            this.audioFileInput.setCustomValidity("");
+        }
 
         this.uploadedFiles = [...this.uploadedFiles, ...validatedFiles];
 
@@ -110,8 +141,13 @@ class DataHandler {
                 duration: formattedDuration,
             };
 
-            await trackStorage.saveTrack(trackData);
-            this.appendTrackToPlaylist(trackData);
+            const trackId = await trackStorage.saveTrack(trackData);
+
+            this.appendTrackToPlaylist({
+                id: trackId,
+                ...trackData,
+                coverUrl: metadata.coverUrl
+            });
         }
 
         this.uploadedFiles = [];
@@ -122,6 +158,7 @@ class DataHandler {
 
         if (this.audioFileInput) {
             this.audioFileInput.value = "";
+            this.audioFileInput.setCustomValidity("");
         }
 
         popup.close();
@@ -148,6 +185,7 @@ class DataHandler {
         const index = this.playList.querySelectorAll(".song_num").length + 1;
 
         const trackElement = createTrackElement({
+            id: track.id,
             index,
             title: track.title,
             artist: track.artist,
@@ -192,6 +230,23 @@ class DataHandler {
                     const tagMap = result?.tags || {};
                     const pictureTag = tagMap.picture;
                     let coverUrl = null;
+                    const title = this.getFirstNonEmptyTagValue(tagMap, [
+                        "title",
+                        "TIT2"
+                    ]) || this.formatFileName(file.name);
+                    const artist = this.getFirstNonEmptyTagValue(tagMap, [
+                        "artist",
+                        "albumartist",
+                        "albumArtist",
+                        "performer",
+                        "performers",
+                        "band",
+                        "author",
+                        "composer",
+                        "TPE1",
+                        "TPE2",
+                        "TCOM"
+                    ]) || "Unknown artist";
 
                     if (pictureTag) {
                         const byteArray = new Uint8Array(pictureTag.data);
@@ -200,8 +255,8 @@ class DataHandler {
                     }
 
                     resolve({
-                        title: tagMap.title || this.formatFileName(file.name),
-                        artist: tagMap.artist || "Unknown artist",
+                        title,
+                        artist,
                         coverUrl
                     });
                 },
@@ -214,6 +269,45 @@ class DataHandler {
                 }
             });
         });
+    }
+
+    getFirstNonEmptyTagValue(tagMap, keys) {
+        for (const key of keys) {
+            const normalized = this.normalizeTagValue(tagMap[key]);
+            if (normalized) return normalized;
+        }
+
+        return "";
+    }
+
+    normalizeTagValue(value) {
+        if (typeof value === "string") {
+            const trimmed = value.trim();
+            return trimmed;
+        }
+
+        if (Array.isArray(value)) {
+            const joined = value
+                .map((item) => this.normalizeTagValue(item))
+                .filter(Boolean)
+                .join(", ")
+                .trim();
+            return joined;
+        }
+
+        if (!value || typeof value !== "object") {
+            return "";
+        }
+
+        if (typeof value.text === "string") {
+            return value.text.trim();
+        }
+
+        if (typeof value.data === "string") {
+            return value.data.trim();
+        }
+
+        return "";
     }
 
     formatTime(seconds) {
@@ -231,6 +325,72 @@ class DataHandler {
             .replace(/[_-]+/g, " ")
             .replace(/\s+/g, " ")
             .trim();
+    }
+
+    renumberTracks() {
+        if (!this.playList) return;
+
+        const tracks = this.playList.querySelectorAll(".song_num");
+
+        tracks.forEach((track, index) => {
+            const numberElement = track.querySelector(".number_song");
+            if (numberElement) {
+                numberElement.textContent = String(index + 1).padStart(2, "0");
+            }
+        });
+    }
+
+    bindDeleteTrack() {
+        if (!this.playList) return;
+
+        this.playList.addEventListener("click", async (event) => {
+            const deleteButton = event.target.closest(".delete_track_button");
+            if (!deleteButton) return;
+
+            const trackElement = deleteButton.closest(".song_num");
+            if (!trackElement) return;
+
+            const trackId = Number(trackElement.dataset.id);
+            if (!trackId) return;
+
+            const allTracksBeforeDelete = Array.from(
+                this.playList.querySelectorAll(".song_num")
+            );
+
+            const deletedTrackIndex = allTracksBeforeDelete.indexOf(trackElement);
+            const isDeletingCurrentTrack = deletedTrackIndex === player.currentTrackIndex;
+
+            await trackStorage.deleteTrack(trackId);
+
+            const trackSrc = trackElement.dataset.src;
+            if (trackSrc) {
+                URL.revokeObjectURL(trackSrc);
+            }
+
+            trackElement.remove();
+            this.renumberTracks();
+
+            const remainingTracks = this.playList.querySelectorAll(".song_num");
+
+            if (isDeletingCurrentTrack) {
+                if (remainingTracks.length === 0) {
+                    player.resetPlayer();
+                    return;
+                }
+
+                const newIndex =
+                    deletedTrackIndex >= remainingTracks.length
+                        ? remainingTracks.length - 1
+                        : deletedTrackIndex;
+
+                player.loadTrack(newIndex, { historyMode: "replace" });
+                player.pause();
+            } else if (deletedTrackIndex < player.currentTrackIndex) {
+                player.currentTrackIndex -= 1;
+                localStorage.setItem("currentTrackIndex", String(player.currentTrackIndex));
+                player.syncHistoryWithCurrentTrack("replace");
+            }
+        });
     }
 }
 
