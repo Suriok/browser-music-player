@@ -2,6 +2,7 @@ import { popup } from "./popup.js";
 import { dataHandler } from "./dataHandler.js";
 import { player } from "./player.js";
 import { playlistSearch } from "./search.js";
+import { cloudsSetup } from "./cloude.js";
 
 function registerServiceWorker() {
     if (!("serviceWorker" in navigator)) return;
@@ -20,6 +21,7 @@ async function initApp() {
     await dataHandler.setup();
     player.setup();
     playlistSearch.setup();
+    await cloudsSetup();
 }
 
 registerServiceWorker();

@@ -18,6 +18,11 @@ html, body {
     font-family: Consolas, serif;
 }
 
+main {
+    overflow: hidden;
+    position: relative;
+}
+
 *,
 *::before,
 *::after {
