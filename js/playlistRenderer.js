@@ -1,3 +1,5 @@
+import "./PlaylistTrack.js";
+
 export function createTrackElement({
                                        id,
                                        index,
@@ -7,33 +9,20 @@ export function createTrackElement({
                                        file,
                                        coverUrl = null
                                    }) {
-    const article = document.createElement("article");
-    article.className = "song_num";
+    const el = document.createElement("playlist-track");
+    el.className = "song_num";
 
-    const formattedNumber = String(index).padStart(2, "0");
     const fileURL = URL.createObjectURL(file);
-
-    article.dataset.src = fileURL;
-    article.dataset.id = String(id);
+    el.dataset.src = fileURL;
+    el.dataset.id = String(id);
+    el.dataset.index = String(index);
+    el.dataset.title = title;
+    el.dataset.artist = artist;
+    el.dataset.duration = duration;
 
     if (coverUrl) {
-        article.dataset.cover = coverUrl;
+        el.dataset.cover = coverUrl;
     }
 
-    article.innerHTML = `
-        <h3 class="number_song">${formattedNumber}</h3>
-
-        <span class="text_container">
-            <span class="song_name">${title}</span>
-            <span class="song_artist">${artist}</span>
-        </span>
-
-        <time class="song_time">${duration}</time>
-
-        <button class="delete_track_button" type="button" aria-label="Delete track">
-            <img src="photo/trash.svg" alt="" aria-hidden="true">
-        </button>
-    `;
-
-    return article;
+    return el;
 }

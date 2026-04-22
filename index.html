@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VibeMusic</title>
+    <link rel="manifest" href="manifest.webmanifest">
+    <meta name="theme-color" content="#1a1a3e">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/popUp.css">
 </head>
@@ -96,17 +98,17 @@
 
             <input type="file"
                    id="audioFileInput"
+                   class="visually_hidden"
                    accept=".mp3,.wav,audio/mpeg,audio/wav"
                    multiple
-                   required
                    aria-describedby="fileRules"
-                   hidden
             >
 
-            <button class="browse_button" type="button">
+            <label for="audioFileInput" class="browse_button" tabindex="0">
                 <img src="photo/folder.svg" alt="" aria-hidden="true">
                 <span>Browse Files</span>
-            </button>
+            </label>
+            <span class="browse_error hidden" id="browseError" role="alert">No file selected</span>
 
             <button class="confirm_button" id="confirmUploadButton" type="submit">
                 Add tracks

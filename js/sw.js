@@ -1,4 +1,4 @@
-const CACHE_NAME = "vibemusic-shell-v1";
+const CACHE_NAME = "vibemusic-shell-v2";
 const APP_SHELL = [
     "./",
     "./index.html",
@@ -12,6 +12,7 @@ const APP_SHELL = [
     "./js/search.js",
     "./js/storage.js",
     "./js/playlistRenderer.js",
+    "./js/PlaylistTrack.js",
     "./js/cloude.js",
     "./js/namespace.js",
     "./photo/album.jpg",

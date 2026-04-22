@@ -13,6 +13,8 @@ class DataHandler {
         this.addSongButton = document.getElementById("confirmUploadButton");
         this.playList = document.getElementById("playlistContainer");
 
+        this.browseError = document.getElementById("browseError");
+
         this.uploadedFiles = [];
     }
 
@@ -25,11 +27,7 @@ class DataHandler {
     }
 
     bindBrowseInput() {
-        if (!this.browseButton || !this.audioFileInput) return;
-
-        this.browseButton.addEventListener("click", () => {
-            this.audioFileInput.click();
-        });
+        if (!this.audioFileInput) return;
 
         this.audioFileInput.addEventListener("change", (event) => {
             const files = Array.from(event.target.files);
@@ -82,8 +80,7 @@ class DataHandler {
             }
 
             if (this.uploadedFiles.length === 0) {
-                this.audioFileInput.setCustomValidity("Please select at least one audio file.");
-                this.audioFileInput.reportValidity();
+                if (this.browseError) this.browseError.classList.remove("hidden");
                 return;
             }
 
@@ -141,6 +138,8 @@ class DataHandler {
             this.audioFileInput.setCustomValidity("");
         }
 
+        if (this.browseError) this.browseError.classList.add("hidden");
+
         this.uploadedFiles = [...this.uploadedFiles, ...validatedFiles];
 
         if (this.selectedFiles) {
@@ -186,6 +185,8 @@ class DataHandler {
             this.audioFileInput.value = "";
             this.audioFileInput.setCustomValidity("");
         }
+
+        if (this.browseError) this.browseError.classList.add("hidden");
 
         popup.close();
     }
