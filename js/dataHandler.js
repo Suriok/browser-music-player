@@ -1,7 +1,7 @@
-import { popup } from "./popup.js";
-import { trackStorage } from "./storage.js";
-import { createTrackElement } from "./playlistRenderer.js";
-import { player } from "./player.js";
+import {popup} from "./popup.js";
+import {trackStorage} from "./storage.js";
+import {createTrackElement} from "./playlistRenderer.js";
+import {player} from "./player.js";
 
 class DataHandler {
     constructor() {
@@ -61,10 +61,25 @@ class DataHandler {
     bindAddSongButton() {
         if (!this.uploadForm) return;
 
+        if (this.addSongButton) {
+            this.addSongButton.addEventListener("click", (event) => {
+                if (navigator.onLine) return;
+
+                event.preventDefault();
+                event.stopPropagation();
+                this.showOfflineUploadError();
+            });
+        }
+
         this.uploadForm.addEventListener("submit", async (event) => {
             event.preventDefault();
 
             if (!this.audioFileInput) return;
+
+            if (!navigator.onLine) {
+                this.showOfflineUploadError();
+                return;
+            }
 
             if (this.uploadedFiles.length === 0) {
                 this.audioFileInput.setCustomValidity("Please select at least one audio file.");
@@ -75,6 +90,17 @@ class DataHandler {
             this.audioFileInput.setCustomValidity("");
             await this.addUploadedSongsToPlaylist();
         });
+    }
+
+    showOfflineUploadError() {
+        if (this.audioFileInput) {
+            this.audioFileInput.setCustomValidity(
+                "You cannot add songs while the app is offline. Please reconnect to the internet."
+            );
+            this.audioFileInput.reportValidity();
+        }
+
+        alert("You cannot add songs while the app is offline. Please reconnect to the internet.");
     }
 
     handleFiles(files) {
@@ -282,17 +308,15 @@ class DataHandler {
 
     normalizeTagValue(value) {
         if (typeof value === "string") {
-            const trimmed = value.trim();
-            return trimmed;
+            return value.trim();
         }
 
         if (Array.isArray(value)) {
-            const joined = value
+            return value
                 .map((item) => this.normalizeTagValue(item))
                 .filter(Boolean)
                 .join(", ")
                 .trim();
-            return joined;
         }
 
         if (!value || typeof value !== "object") {
