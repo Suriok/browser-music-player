@@ -33,6 +33,7 @@ const APP_SHELL = [
     "https://cdn.jsdelivr.net/npm/jsmediatags@3.9.7/dist/jsmediatags.min.js"
 ];
 
+// Precache app shell on install.
 self.addEventListener("install", (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL))
@@ -40,6 +41,7 @@ self.addEventListener("install", (event) => {
     self.skipWaiting();
 });
 
+// Remove old caches after activating new worker.
 self.addEventListener("activate", (event) => {
     event.waitUntil(
         caches.keys().then((cacheNames) =>
@@ -53,6 +55,7 @@ self.addEventListener("activate", (event) => {
     self.clients.claim();
 });
 
+// Serve from cache first, then fallback to network.
 self.addEventListener("fetch", (event) => {
     if (event.request.method !== "GET") return;
 

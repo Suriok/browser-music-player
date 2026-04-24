@@ -1,4 +1,6 @@
+// Control audio playback, playlist state and player UI.
 class Player{
+    // Cache DOM nodes and initialize audio state.
     constructor() {
         this.playButton = document.querySelector(".play_button");
         this.prevButton = document.querySelector(".prev_button");
@@ -16,6 +18,7 @@ class Player{
         this.isPlaying = false;
     }
 
+    // Wire all player listeners and restore saved track.
     setup() {
         this.bindControls(); // buttons
         this.bindAudioEvents(); // events
@@ -25,7 +28,7 @@ class Player{
     }
 
 
-    // CONTROLS SETTINGS
+    // Bind control buttons and progress slider.
     bindControls() {
         // check if the button exists
         // then add event listener
@@ -61,7 +64,7 @@ class Player{
         }
     }
 
-    // AUDIO EVENTS
+    // React to audio element events.
     bindAudioEvents() {
         this.audio.addEventListener("timeupdate", () => {
             this.updateProgress();
@@ -76,6 +79,7 @@ class Player{
         });
     }
 
+    // Start playback when user clicks a playlist row.
     bindPlaylistEvents() {
         if (!this.playListContainer) return;
 
@@ -99,12 +103,14 @@ class Player{
         });
     }
 
+    // Handle browser back/forward navigation.
     bindHistoryEvents() {
         window.addEventListener("popstate", (event) => {
             this.handlePopState(event);
         });
     }
 
+    // Return playable track elements from playlist.
     getTracks(){
         if (!this.playListContainer) return [];
 
@@ -113,6 +119,7 @@ class Player{
             .filter(track => track.dataset.src);
     }
 
+    // Load selected track into audio and sync UI.
     loadTrack(index, options = {}) {
         const { historyMode = "none" } = options;
         const tracks = this.getTracks();
@@ -156,6 +163,7 @@ class Player{
         this.updateActiveTrack();
     }
 
+    // Restore last track from URL first, then localStorage.
     restoreLastTrack() {
         const tracks = this.getTracks();
         const trackFromUrl = this.getTrackIndexFromUrl();
@@ -173,6 +181,7 @@ class Player{
         this.loadTrack(savedIndex, { historyMode: "replace" });
     }
 
+    // Start audio playback (auto-load first track if needed).
     async play() {
         if (!this.audio.src) {
             const tracks = this.getTracks();
@@ -189,12 +198,14 @@ class Player{
         }
     }
 
+    // Pause current playback.
     pause(){
         this.audio.pause();
         this.isPlaying = false;
         this.updatePlayButtonIcon();
     }
 
+    // Toggle between play and pause.
     togglePlay(){
         if (!this.audio.src){
             void this.play();
@@ -208,6 +219,7 @@ class Player{
         }
     }
 
+    // Move to next track with circular navigation.
     playNext() {
         const tracks = this.getTracks();
         if (tracks.length === 0) return;
@@ -222,6 +234,7 @@ class Player{
         void this.play();
     }
 
+    // Move to previous track with circular navigation.
     playPrevious(){
         const tracks = this.getTracks();
         if(tracks.length === 0) return;
@@ -236,6 +249,7 @@ class Player{
         void this.play();
     }
 
+    // Parse track index from URL query (?track=).
     getTrackIndexFromUrl() {
         const url = new URL(window.location.href);
         const trackParam = url.searchParams.get("track");
@@ -248,6 +262,7 @@ class Player{
         return parsed - 1;
     }
 
+    // Restore player state when history entry changes.
     handlePopState(event) {
         const tracks = this.getTracks();
         if (tracks.length === 0) {
@@ -278,6 +293,7 @@ class Player{
         void this.play();
     }
 
+    // Update browser URL/history for current track.
     updateHistoryForTrack(mode) {
         if (!["push", "replace"].includes(mode)) return;
         if (this.currentTrackIndex < 0) return;
@@ -295,10 +311,12 @@ class Player{
         history.replaceState(state, "", url);
     }
 
+    // External helper to resync current history state.
     syncHistoryWithCurrentTrack(mode = "replace") {
         this.updateHistoryForTrack(mode);
     }
 
+    // Refresh progress bar and current/total time label.
     updateProgress() {
         if (this.progressBar && this.audio.duration) {
             this.progressBar.value = (this.audio.currentTime / this.audio.duration) * 100;
@@ -311,6 +329,7 @@ class Player{
         }
     }
 
+    // Highlight currently active track in playlist.
     updateActiveTrack(){
         const tracks = this.getTracks();
 
@@ -323,6 +342,7 @@ class Player{
         });
     }
 
+    // Switch play button icon based on playback state.
     updatePlayButtonIcon() {
         const icon = this.playButton?.querySelector("img");
         if (!icon) return;
@@ -336,6 +356,7 @@ class Player{
         }
     }
 
+    // Convert seconds into m:ss format.
     formatTime(seconds) {
         if (!seconds || !isFinite(seconds)) return "0:00";
 
@@ -345,6 +366,7 @@ class Player{
         return `${minutes}:${String(remainingSeconds).padStart(2, "0")}`;
     }
 
+    // Reset player to default placeholder state.
     resetPlayer() {
         this.audio.pause();
         this.audio.src = "";
@@ -379,6 +401,7 @@ class Player{
         this.updatePlayButtonIcon();
     }
 
+    // Remove track query parameter from URL.
     clearTrackFromUrl() {
         const url = new URL(window.location.href);
         url.searchParams.delete("track");

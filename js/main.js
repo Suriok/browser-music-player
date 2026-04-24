@@ -4,6 +4,7 @@ import { player } from "./player.js";
 import { playlistSearch } from "./search.js";
 import { cloudsSetup } from "./cloud.js";
 
+// Register service worker after page load.
 function registerServiceWorker() {
     if (!("serviceWorker" in navigator)) return;
 
@@ -16,6 +17,7 @@ function registerServiceWorker() {
     });
 }
 
+// Initialize all app modules in startup order.
 async function initApp() {
     popup.setup();
     await dataHandler.setup();

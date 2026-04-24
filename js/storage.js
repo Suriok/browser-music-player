@@ -3,6 +3,7 @@ const DB_VERSION = 1;
 const STORE_NAME = "tracks";
 
 class TrackStorage {
+    // Open IndexedDB and create store on first run.
     openDB() {
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(DB_NAME, DB_VERSION);
@@ -23,6 +24,7 @@ class TrackStorage {
         });
     }
 
+    // Save one track object and return generated ID.
     async saveTrack(trackData) {
         const db = await this.openDB();
 
@@ -36,6 +38,7 @@ class TrackStorage {
         });
     }
 
+    // Read all persisted tracks.
     async getAllTracks() {
         const db = await this.openDB();
 
@@ -49,6 +52,7 @@ class TrackStorage {
         });
     }
 
+    // Remove track by ID.
     async deleteTrack(trackId) {
         const db = await this.openDB();
 

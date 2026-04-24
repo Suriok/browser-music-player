@@ -6,14 +6,17 @@ class Popup {
         this.closeButton = document.getElementById("close");
     }
 
+    // Show popup dialog.
     open() {
         this.popupElement.classList.remove("hidden");
     }
 
+    // Hide popup dialog.
     close() {
         this.popupElement.classList.add("hidden");
     }
 
+    // Bind open/close interactions.
     setup() {
         if (this.openButton) {
             this.openButton.addEventListener("click", () => this.open());

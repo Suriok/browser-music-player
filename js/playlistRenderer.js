@@ -1,5 +1,6 @@
 import "./PlaylistTrack.js";
 
+// Build playlist custom element and attach track metadata.
 export function createTrackElement({
                                        id,
                                        index,

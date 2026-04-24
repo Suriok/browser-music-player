@@ -18,6 +18,7 @@ class DataHandler {
         this.uploadedFiles = [];
     }
 
+    // Attach upload handlers and restore persisted playlist.
     async setup() {
         this.bindBrowseInput();
         this.bindDropZone();
@@ -26,6 +27,7 @@ class DataHandler {
         this.bindDeleteTrack();
     }
 
+    // Process files selected via native file input.
     bindBrowseInput() {
         if (!this.audioFileInput) return;
 
@@ -35,6 +37,7 @@ class DataHandler {
         });
     }
 
+    // Handle drag-and-drop upload area interactions.
     bindDropZone() {
         if (!this.dropZone) return;
 
@@ -56,6 +59,7 @@ class DataHandler {
         });
     }
 
+    // Validate and submit files to playlist.
     bindAddSongButton() {
         if (!this.uploadForm) return;
 
@@ -100,6 +104,7 @@ class DataHandler {
         alert("You cannot add songs while the app is offline. Please reconnect to the internet.");
     }
 
+    // Validate file type/size and keep only accepted audio files.
     handleFiles(files) {
         const maxSize = 50 * 1024 * 1024;
         const allowedTypes = ["audio/mpeg", "audio/wav", "audio/x-wav"];
@@ -150,6 +155,7 @@ class DataHandler {
         }
     }
 
+    // Save uploaded tracks and append them to UI.
     async addUploadedSongsToPlaylist() {
         if (!this.playList || this.uploadedFiles.length === 0) return;
 
@@ -191,6 +197,7 @@ class DataHandler {
         popup.close();
     }
 
+    // Rebuild playlist from IndexedDB after page reload.
     async restoreTracksFromStorage() {
         if (!this.playList) return;
 

@@ -13,6 +13,7 @@ const exitPadding = 40;
 
 let cloudData = [];
 
+// Load SVG cloud templates into DOM once.
 async function loadSVGTemplates() {
     const wrapper = document.querySelector("main");
     return await Promise.all(
@@ -29,6 +30,7 @@ async function loadSVGTemplates() {
     );
 }
 
+// Create cloud instances with randomized position, size and speed.
 function createClouds(templates) {
     const wrapper = document.querySelector("main");
     const wrapperHeight = window.innerHeight;
@@ -60,6 +62,7 @@ function createClouds(templates) {
     }
 }
 
+// Animate clouds from right to left in a loop.
 function animate() {
     cloudData.forEach(cloud => {
         cloud.x -= cloud.speed;

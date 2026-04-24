@@ -1,4 +1,5 @@
 class PlaylistTrack extends HTMLElement {
+    // Render a single playlist row from data-* attributes.
     connectedCallback() {
         const index = String(this.dataset.index).padStart(2, "0");
         const title = this.dataset.title ?? "";

@@ -4,6 +4,7 @@ class PlaylistSearch {
         this.playlistContainer = document.getElementById("playlistContainer");
     }
 
+    // Attach search input listener.
     setup() {
         if (!this.searchInput || !this.playlistContainer) return;
 
@@ -12,6 +13,7 @@ class PlaylistSearch {
         });
     }
 
+    // Filter playlist rows by title or artist.
     filterTracks() {
         const query = this.searchInput.value.toLowerCase().trim();
         const tracks = this.playlistContainer.querySelectorAll(".song_num");
