@@ -64,8 +64,9 @@ class DataHandler {
         if (!this.uploadForm) return;
 
         if (this.addSongButton) {
-            this.addSongButton.addEventListener("click", (event) => {
-                if (navigator.onLine) return;
+            this.addSongButton.addEventListener("click", async (event) => {
+                const hasInternet = await this.hasInternetConnection();
+                if (hasInternet) return;
 
                 event.preventDefault();
                 event.stopPropagation();
@@ -78,7 +79,8 @@ class DataHandler {
 
             if (!this.audioFileInput) return;
 
-            if (!navigator.onLine) {
+            const hasInternet = await this.hasInternetConnection();
+            if (!hasInternet) {
                 this.showOfflineUploadError();
                 return;
             }
@@ -91,6 +93,29 @@ class DataHandler {
             this.audioFileInput.setCustomValidity("");
             await this.addUploadedSongsToPlaylist();
         });
+    }
+
+    // Check real internet access instead of relying only on navigator.onLine.
+    async hasInternetConnection() {
+        if (!navigator.onLine) return false;
+
+        const timeoutMs = 3000;
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+        try {
+            await fetch("https://www.gstatic.com/generate_204", {
+                method: "GET",
+                cache: "no-store",
+                mode: "no-cors",
+                signal: controller.signal
+            });
+            return true;
+        } catch {
+            return false;
+        } finally {
+            clearTimeout(timeoutId);
+        }
     }
 
     showOfflineUploadError() {
