@@ -196,16 +196,6 @@
     word-break: break-word;
 }
 
-.selected_file {
-    margin: 0 0 18px;
-    color: #e9f6fc;
-    font-size: 14px;
-    font-weight: 600;
-    text-align: center;
-    max-width: 100%;
-    word-break: break-word;
-}
-
 .confirm_button {
     margin-top: 14px;
     display: inline-flex;
