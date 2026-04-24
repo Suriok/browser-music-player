@@ -17,6 +17,7 @@ Cílem projektu je vytvořit moderní hudební přehrávač běžící čistě v
 - UI přehrávače + playlist + popup pro upload souborů.
 - Validace uploadu (formát MP3/WAV, limit 50 MB na soubor).
 - Čtení ID3 metadat přes `jsmediatags` (včetně cover obrázku, pokud je v souboru).
+- Autor a obálka se doplní pouze tehdy, pokud jsou tyto údaje dostupné v metadatech audio souboru.
 - Ukládání skladeb do `IndexedDB` (`skyTuneDB`, store `tracks`).
 - Vyhledávání skladeb v playlistu podle názvu nebo interpreta.
 - Mazání skladeb z playlistu i databáze.
