@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VibeMusic</title>
+    <link rel="icon" type="image/png" href="photo/music.png">
+    <link rel="manifest" href="manifest.webmanifest">
+    <meta name="theme-color" content="#1a1a3e">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/popUp.css">
+</head>
+<body>
+<main>
+    <section class="container_player" aria-label="Now playing">
+        <figure class="song_photo">
+            <img id="currentSongCover" src="photo/album.jpg" alt="Album cover for Midnight Glow">
+        </figure>
+        <h2 class="song_name" id="currentSongName">Midnight Glow</h2>
+        <p class="song_artist" id="currentSongArtist">Neon Waves</p>
+
+
+        <label for="progress" class="visually_hidden">Track progress</label>
+        <input
+                id="progress"
+                class="progress_bar"
+                type="range"
+                min="0"
+                max="100"
+                value="38"
+                aria-label="Track progress"
+        >
+
+        <time class="song_time" id="currentSongTime" datetime="PT3M42S">3:42</time>
+
+        <footer class="controlers" aria-label="Audio controls">
+            <button class="prev_button" type="button" aria-label="Previous track">
+                <img src="photo/control_button_prev.svg" alt="">
+            </button>
+
+            <button class="play_button" type="button" aria-label="Play or pause">
+                <img src="photo/play.svg" alt="">
+            </button>
+
+            <button class="next_button" type="button" aria-label="Next track">
+                <img src="photo/control_button_next.svg" alt="">
+            </button>
+        </footer>
+    </section>
+
+    <aside class="container_player" aria-label="Playlist">
+        <div class="upper_line">
+            <h2 class="song_artist">UP NEXT</h2>
+            <button class="image_button" type="button" id ="open" aria-label="Add track">
+                <img src="photo/add_button.svg" alt="">
+            </button>
+        </div>
+
+        <input
+                type="search"
+                id="playlistSearch"
+                class="playlist_search"
+                placeholder="Search songs or artists"
+                autofocus
+                minlength="1"
+                maxlength="80"
+                aria-label="Search songs or artists"
+        >
+
+        <section aria-label="Upcoming songs" id="playlistContainer"></section>
+    </aside>
+</main>
+
+<div class="popup_overlay hidden" id="popUp">
+    <section class="pop_up" role="dialog" aria-modal="true" aria-labelledby="popup_title">
+        <div class="pop_up_header">
+            <h2 id="popup_title" class="pop_up_title">
+                <img src="photo/note.svg" alt="note" aria-hidden="true">
+                Add Music
+            </h2>
+
+            <button class="close_button" type="button" id="close" aria-label="Close popup">
+                <img src="photo/cross.svg" alt="">
+            </button>
+        </div>
+
+        <form class="pop_up_container" id="drop_zone">
+            <div class="upload_icon">
+                <img src="photo/upload.svg" alt="" aria-hidden="true">
+            </div>
+
+            <h3 class="drop_title">Drag and drop your files here</h3>
+            <p class="format_text" id="fileRules">Supported formats: MP3, WAV</p>
+            <p class="selected_file" id="selectedFileText">No file selected</p>
+
+            <div class="divider">
+                <span>OR</span>
+            </div>
+
+            <input type="file"
+                   id="audioFileInput"
+                   class="visually_hidden"
+                   accept=".mp3,.wav,audio/mpeg,audio/wav"
+                   multiple
+                   aria-describedby="fileRules"
+            >
+
+            <label for="audioFileInput" class="browse_button" tabindex="0">
+                <img src="photo/folder.svg" alt="" aria-hidden="true">
+                <span>Browse Files</span>
+            </label>
+            <span class="browse_error hidden" id="browseError" role="alert">No file selected</span>
+
+            <button class="confirm_button" id="confirmUploadButton" type="submit">
+                Add tracks
+            </button>
+        </form>
+
+        <p class="file_limit_text">Maximum file size: 50MB per track</p>
+
+
+    </section>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/jsmediatags@3.9.7/dist/jsmediatags.min.js"></script>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "name": "Web Player",
+  "short_name": "Player",
+  "id": "/",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0d0d2b",
+  "theme_color": "#1a1a3e",
+  "icons": [
+    {
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
