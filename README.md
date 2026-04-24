@@ -69,13 +69,16 @@ The goal of the project is not only to create a functional music player, but als
 ## Screenshots
 
 ### Main Player
-<img width="612" height="620" alt="Main Player" src="https://github.com/user-attachments/assets/9bf28755-3312-4fe0-9c00-f15fafa375b4" />
+<img width="428" height="753" alt="Снимок экрана 2026-04-25 004129" src="https://github.com/user-attachments/assets/b9c48061-2c29-4da2-a123-d1a77f9aba0b" />
+
 
 ### Playlist and Search
-<img width="460" height="349" alt="Playlist and Search" src="https://github.com/user-attachments/assets/ff1d37dc-5206-4dcf-ba35-8d31ca7bbf53" />
+<img width="434" height="140" alt="Снимок экрана 2026-04-25 004210" src="https://github.com/user-attachments/assets/6fa26b5d-3e72-4e7f-9562-d799185fb674" />
+
 
 ### Upload Popup
-<img width="790" height="611" alt="Upload Popup" src="https://github.com/user-attachments/assets/10e59383-e7e1-4071-86f4-0275e661c50f" />
+<img width="615" height="544" alt="Снимок экрана 2026-04-25 004145" src="https://github.com/user-attachments/assets/93a5f708-6eb4-49d8-86c8-408fe571d8c1" />
+
 
 
 
