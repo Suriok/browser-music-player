@@ -2,7 +2,7 @@ import { popup } from "./popup.js";
 import { dataHandler } from "./dataHandler.js";
 import { player } from "./player.js";
 import { playlistSearch } from "./search.js";
-import { cloudsSetup } from "./cloude.js";
+import { cloudsSetup } from "./cloud.js";
 
 function registerServiceWorker() {
     if (!("serviceWorker" in navigator)) return;
